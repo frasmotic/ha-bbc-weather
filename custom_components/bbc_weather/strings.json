@@ -1,0 +1,58 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "BBC Weather",
+        "description": "Enter one or two location names to get BBC Weather forecasts.",
+        "data": {
+          "location_1": "Location 1 (e.g. city name or postcode)",
+          "location_2": "Location 2 (optional)",
+          "api_key": "API key (optional, override default)"
+        }
+      },
+      "select_locations": {
+        "title": "Select Locations",
+        "description": "Multiple results were found. Please select the correct location.",
+        "data": {
+          "location_1": "Location 1",
+          "location_2": "Location 2"
+        }
+      }
+    },
+    "error": {
+      "no_location": "Please enter at least one location.",
+      "location_not_found": "Location not found. Please try a different search.",
+      "forecast_unavailable": "Could not retrieve forecast data for this location.",
+      "already_configured": "BBC Weather is already configured."
+    },
+    "abort": {
+      "single_instance_allowed": "Only a single instance of BBC Weather is allowed."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "BBC Weather Locations",
+        "description": "Update your BBC Weather locations.",
+        "data": {
+          "location_1": "Location 1 (e.g. city name or postcode)",
+          "location_2": "Location 2 (optional)",
+          "api_key": "API key (optional, override default)"
+        }
+      },
+      "select_locations": {
+        "title": "Select Locations",
+        "description": "Multiple results were found. Please select the correct location.",
+        "data": {
+          "location_1": "Location 1",
+          "location_2": "Location 2"
+        }
+      }
+    },
+    "error": {
+      "no_location": "Please enter at least one location.",
+      "location_not_found": "Location not found. Please try a different search.",
+      "forecast_unavailable": "Could not retrieve forecast data for this location."
+    }
+  }
+}
