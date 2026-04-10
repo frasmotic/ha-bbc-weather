@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from homeassistant import config_entries
@@ -10,6 +10,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
+import custom_components.bbc_weather as bbc_module
 from custom_components.bbc_weather.const import DOMAIN
 
 from .conftest import (
@@ -23,11 +24,11 @@ MODULE = "custom_components.bbc_weather.config_flow"
 
 @pytest.fixture(autouse=True)
 def mock_setup_entry():
-    """Prevent async_setup_entry from running during config flow tests."""
-    with patch(
-        "custom_components.bbc_weather.async_setup_entry", return_value=True
-    ), patch(
-        "custom_components.bbc_weather.async_unload_entry", return_value=True
+    """Patch setup/unload on the actual module object so HA's loader sees the mock."""
+    with patch.object(
+        bbc_module, "async_setup_entry", AsyncMock(return_value=True)
+    ), patch.object(
+        bbc_module, "async_unload_entry", AsyncMock(return_value=True)
     ):
         yield
 
@@ -111,9 +112,7 @@ async def test_location_not_found_shows_error(mock_search, hass: HomeAssistant):
 
 @patch(f"{MODULE}._validate_forecast", return_value=True)
 @patch(f"{MODULE}._search_locations")
-async def test_two_locations(
-    mock_search, mock_validate, hass: HomeAssistant
-):
+async def test_two_locations(mock_search, mock_validate, hass: HomeAssistant):
     """Both location fields filled creates entry with two locations."""
 
     async def _search_side_effect(_api, query):
@@ -130,7 +129,11 @@ async def test_two_locations(
     )
     result = await hass.config_entries.flow.async_configure(
         result["flow_id"],
-        user_input={"location_1": "London", "location_2": "Manchester", "api_key": ""},
+        user_input={
+            "location_1": "London",
+            "location_2": "Manchester",
+            "api_key": "",
+        },
     )
 
     assert result["type"] is FlowResultType.CREATE_ENTRY
