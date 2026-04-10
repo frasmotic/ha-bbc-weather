@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
+import pytest
 from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
@@ -18,7 +19,15 @@ from .conftest import (
 )
 
 MODULE = "custom_components.bbc_weather.config_flow"
-INIT_MODULE = "custom_components.bbc_weather"
+
+
+@pytest.fixture
+def mock_setup_entry():
+    """Prevent async_setup_entry from running during config flow tests."""
+    with patch(
+        "custom_components.bbc_weather.async_setup_entry", return_value=True
+    ) as mock:
+        yield mock
 
 
 # ---------------------------------------------------------------------------
@@ -26,11 +35,10 @@ INIT_MODULE = "custom_components.bbc_weather"
 # ---------------------------------------------------------------------------
 
 
-@patch(f"{INIT_MODULE}.async_setup_entry", return_value=True)
 @patch(f"{MODULE}._validate_forecast", return_value=True)
 @patch(f"{MODULE}._search_locations")
 async def test_single_result_completes_immediately(
-    mock_search, mock_validate, mock_setup, hass: HomeAssistant
+    mock_search, mock_validate, hass: HomeAssistant, mock_setup_entry
 ):
     """Single search result skips selection and creates entry."""
     mock_search.return_value = [PARSED_LOCATION_LONDON]
@@ -54,11 +62,10 @@ async def test_single_result_completes_immediately(
     assert locations[0]["latitude"] == 51.50853
 
 
-@patch(f"{INIT_MODULE}.async_setup_entry", return_value=True)
 @patch(f"{MODULE}._validate_forecast", return_value=True)
 @patch(f"{MODULE}._search_locations")
 async def test_multiple_results_shows_selection(
-    mock_search, mock_validate, mock_setup, hass: HomeAssistant
+    mock_search, mock_validate, hass: HomeAssistant, mock_setup_entry
 ):
     """Multiple results show a selection dropdown."""
     mock_search.return_value = [PARSED_LOCATION_LONDON, PARSED_LOCATION_LONDON_OHIO]
@@ -100,10 +107,11 @@ async def test_location_not_found_shows_error(mock_search, hass: HomeAssistant):
     assert result["errors"] == {"location_1": "location_not_found"}
 
 
-@patch(f"{INIT_MODULE}.async_setup_entry", return_value=True)
 @patch(f"{MODULE}._validate_forecast", return_value=True)
 @patch(f"{MODULE}._search_locations")
-async def test_two_locations(mock_search, mock_validate, mock_setup, hass: HomeAssistant):
+async def test_two_locations(
+    mock_search, mock_validate, hass: HomeAssistant, mock_setup_entry
+):
     """Both location fields filled creates entry with two locations."""
 
     async def _search_side_effect(_api, query):
