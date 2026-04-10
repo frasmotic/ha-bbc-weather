@@ -21,13 +21,15 @@ from .conftest import (
 MODULE = "custom_components.bbc_weather.config_flow"
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def mock_setup_entry():
     """Prevent async_setup_entry from running during config flow tests."""
     with patch(
         "custom_components.bbc_weather.async_setup_entry", return_value=True
-    ) as mock:
-        yield mock
+    ), patch(
+        "custom_components.bbc_weather.async_unload_entry", return_value=True
+    ):
+        yield
 
 
 # ---------------------------------------------------------------------------
@@ -38,7 +40,7 @@ def mock_setup_entry():
 @patch(f"{MODULE}._validate_forecast", return_value=True)
 @patch(f"{MODULE}._search_locations")
 async def test_single_result_completes_immediately(
-    mock_search, mock_validate, hass: HomeAssistant, mock_setup_entry
+    mock_search, mock_validate, hass: HomeAssistant
 ):
     """Single search result skips selection and creates entry."""
     mock_search.return_value = [PARSED_LOCATION_LONDON]
@@ -65,7 +67,7 @@ async def test_single_result_completes_immediately(
 @patch(f"{MODULE}._validate_forecast", return_value=True)
 @patch(f"{MODULE}._search_locations")
 async def test_multiple_results_shows_selection(
-    mock_search, mock_validate, hass: HomeAssistant, mock_setup_entry
+    mock_search, mock_validate, hass: HomeAssistant
 ):
     """Multiple results show a selection dropdown."""
     mock_search.return_value = [PARSED_LOCATION_LONDON, PARSED_LOCATION_LONDON_OHIO]
@@ -110,7 +112,7 @@ async def test_location_not_found_shows_error(mock_search, hass: HomeAssistant):
 @patch(f"{MODULE}._validate_forecast", return_value=True)
 @patch(f"{MODULE}._search_locations")
 async def test_two_locations(
-    mock_search, mock_validate, hass: HomeAssistant, mock_setup_entry
+    mock_search, mock_validate, hass: HomeAssistant
 ):
     """Both location fields filled creates entry with two locations."""
 
