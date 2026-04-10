@@ -9,7 +9,6 @@ from custom_components.bbc_weather.coordinator import (
     _safe_numeric,
 )
 
-
 # ---------------------------------------------------------------------------
 # Helpers — instantiate coordinator without __init__ for parse-only testing
 # ---------------------------------------------------------------------------

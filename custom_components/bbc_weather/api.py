@@ -71,7 +71,7 @@ class BBCWeatherAPI:
                     return result
             except BBCWeatherAPIError:
                 raise
-            except (ClientError, asyncio.TimeoutError, ValueError) as err:
+            except (TimeoutError, ClientError, ValueError) as err:
                 last_error = err
                 if attempt < MAX_RETRIES - 1:
                     wait = INITIAL_BACKOFF * (2 ** attempt) + random.uniform(

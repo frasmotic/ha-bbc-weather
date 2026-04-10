@@ -6,7 +6,6 @@ import logging
 from typing import Any
 
 import voluptuous as vol
-
 from homeassistant.config_entries import (
     ConfigEntry,
     ConfigFlow,
@@ -17,7 +16,7 @@ from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .api import BBCWeatherAPI, BBCWeatherAPIError
-from .const import CONF_API_KEY, DOMAIN, MAX_LOCATION_NAME_LENGTH, MAX_LOCATIONS
+from .const import CONF_API_KEY, DOMAIN, MAX_LOCATION_NAME_LENGTH
 
 _LOGGER = logging.getLogger(__name__)
 

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -11,7 +10,6 @@ from aiohttp import ClientResponseError, ClientSession
 
 from custom_components.bbc_weather.api import BBCWeatherAPI, BBCWeatherAPIError
 from custom_components.bbc_weather.const import MAX_RESPONSE_SIZE
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -82,7 +80,7 @@ def _server_error():
 
 def _timeout():
     """Return a context manager that raises TimeoutError on enter."""
-    return MockContextManager(enter_error=asyncio.TimeoutError())
+    return MockContextManager(enter_error=TimeoutError())
 
 
 def _oversized_response():

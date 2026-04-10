@@ -6,14 +6,13 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from custom_components.bbc_weather.const import VISIBILITY_KM
 from custom_components.bbc_weather.coordinator import (
     BBCWeatherDataCoordinator,
     _map_condition,
     _wind_bearing,
 )
-from custom_components.bbc_weather.const import VISIBILITY_KM
 from custom_components.bbc_weather.weather import BBCWeatherEntity
-
 
 # ---------------------------------------------------------------------------
 # Helpers
