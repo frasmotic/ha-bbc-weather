@@ -2,7 +2,36 @@
 
 from __future__ import annotations
 
+import asyncio
+import threading
+from collections.abc import Generator
+
 import pytest
+
+
+@pytest.fixture(autouse=True)
+def verify_cleanup(
+    event_loop: asyncio.AbstractEventLoop,
+    expected_lingering_tasks: bool,
+    expected_lingering_timers: bool,
+) -> Generator[None]:
+    """Override the default verify_cleanup to allow HA's _run_safe_shutdown_loop thread.
+
+    The default fixture from pytest-homeassistant-custom-component fails when
+    HA core starts its safe-shutdown thread during integration setup. This is
+    not caused by our integration and cannot be prevented.
+    """
+    threads_before = frozenset(threading.enumerate())
+    yield
+
+    # Check for unexpected threads, but allow _run_safe_shutdown_loop
+    threads = frozenset(threading.enumerate()) - threads_before
+    for thread in threads:
+        assert (
+            isinstance(thread, threading._DummyThread)
+            or thread.name.startswith("waitpid-")
+            or "_run_safe_shutdown_loop" in thread.name
+        )
 
 # ---------------------------------------------------------------------------
 # Parsed location dicts (as returned by config_flow._search_locations)
